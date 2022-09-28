@@ -1,0 +1,13 @@
+{
+    "name": "flux-cron-handler-api",
+    "productName": "flux-cron-handler-api",
+    "version": "2022-09-28-1",
+    "description": "",
+    "keywords": [],
+    "homepage": "",
+    "peerDependencies": {
+        "flux-shutdown-handler-api": "*",
+        "node-cron": "*"
+    },
+    "private": true
+}
