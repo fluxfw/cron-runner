@@ -1,8 +1,8 @@
-import { CronHandler } from "../../../Adapter/CronHandler/CronHandler.mjs";
 import { GetCronHandlerCommand } from "../Command/GetCronHandlerCommand.mjs";
-import { ShutdownHandler } from "../../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs";
 
 /** @typedef {import("../../../Adapter/CronHandler/Cron.mjs").Cron} Cron */
+/** @typedef {import("../../../Adapter/CronHandler/CronHandler.mjs").CronHandler} CronHandler */
+/** @typedef {import("../../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 
 export class CronHandlerService {
     /**

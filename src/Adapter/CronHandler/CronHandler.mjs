@@ -1,10 +1,10 @@
-import cron from "node-cron";
 import { existsSync } from "node:fs";
-import { ShutdownHandler } from "../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs";
+import nodeCron from "node-cron";
 import { unlink, writeFile } from "node:fs/promises";
 
 /** @typedef {import("./Cron.mjs").Cron} Cron */
 /** @typedef {import("./cronTask.mjs").cronTask} cronTask */
+/** @typedef {import("../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 
 export class CronHandler {
     /**
@@ -78,7 +78,7 @@ export class CronHandler {
 
         if (schedule !== null) {
             await new Promise(resolve => {
-                const scheduler = cron.schedule(schedule, async () => {
+                const scheduler = nodeCron.schedule(schedule, async () => {
                     if (await this.#lockCron()) {
                         for (const cron_task of this.#cron_tasks) {
                             try {
@@ -100,7 +100,7 @@ export class CronHandler {
                 });
             });
         } else {
-            let error = false;
+            let exit_error = false;
 
             if (await this.#lockCron()) {
                 for (const cron_task of this.#cron_tasks) {
@@ -108,15 +108,15 @@ export class CronHandler {
                         await cron_task();
                     } catch (error) {
                         console.error(error);
-                        error = true;
+                        exit_error = true;
                         break;
                     }
                 }
             } else {
-                error = true;
+                exit_error = true;
             }
 
-            await this.#shutdown_handler.shutdown(error ? 1 : null);
+            await this.#shutdown_handler.shutdown(exit_error ? 1 : null);
         }
     }
 
