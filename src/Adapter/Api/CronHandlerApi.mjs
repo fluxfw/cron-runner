@@ -1,7 +1,6 @@
-import { CronHandlerService } from "../../Service/CronHandler/Port/CronHandlerService.mjs";
-
 /** @typedef {import("../CronHandler/Cron.mjs").Cron} Cron */
 /** @typedef {import("../CronHandler/CronHandler.mjs").CronHandler} CronHandler */
+/** @typedef {import("../../Service/CronHandler/Port/CronHandlerService.mjs").CronHandlerService} CronHandlerService */
 /** @typedef {import("../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 
 export class CronHandlerApi {
@@ -36,7 +35,7 @@ export class CronHandlerApi {
      * @returns {Promise<void>}
      */
     async init() {
-        this.#cron_handler_service ??= this.#getCronHandlerService();
+        this.#cron_handler_service ??= await this.#getCronHandlerService();
     }
 
     /**
@@ -50,10 +49,10 @@ export class CronHandlerApi {
     }
 
     /**
-     * @returns {CronHandlerService}
+     * @returns {Promise<CronHandlerService>}
      */
-    #getCronHandlerService() {
-        return CronHandlerService.new(
+    async #getCronHandlerService() {
+        return (await import("../../Service/CronHandler/Port/CronHandlerService.mjs")).CronHandlerService.new(
             this.#shutdown_handler
         );
     }
