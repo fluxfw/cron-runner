@@ -1,6 +1,5 @@
-import { CronHandler } from "../../../Adapter/CronHandler/CronHandler.mjs";
-
 /** @typedef {import("../../../Adapter/CronHandler/Cron.mjs").Cron} Cron */
+/** @typedef {import("../../../Adapter/CronHandler/CronHandler.mjs").CronHandler} CronHandler */
 /** @typedef {import("../../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 
 export class GetCronHandlerCommand {
@@ -29,10 +28,10 @@ export class GetCronHandlerCommand {
 
     /**
      * @param {Cron} cron
-     * @returns {CronHandler}
+     * @returns {Promise<CronHandler>}
      */
-    getCronHandler(cron) {
-        return CronHandler.new(
+    async getCronHandler(cron) {
+        return (await import("../../../Adapter/CronHandler/CronHandler.mjs")).CronHandler.new(
             this.#shutdown_handler,
             cron
         );

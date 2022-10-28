@@ -35,15 +35,15 @@ export class CronHandlerApi {
      * @returns {Promise<void>}
      */
     async init() {
-        this.#cron_handler_service ??= await this.#getCronHandlerService();
+
     }
 
     /**
      * @param {Cron} cron
-     * @returns {CronHandler}
+     * @returns {Promise<CronHandler>}
      */
-    getCronHandler(cron) {
-        return this.#cron_handler_service.getCronHandler(
+    async getCronHandler(cron) {
+        return (await this.#getCronHandlerService()).getCronHandler(
             cron
         );
     }
@@ -52,8 +52,10 @@ export class CronHandlerApi {
      * @returns {Promise<CronHandlerService>}
      */
     async #getCronHandlerService() {
-        return (await import("../../Service/CronHandler/Port/CronHandlerService.mjs")).CronHandlerService.new(
+        this.#cron_handler_service ??= (await import("../../Service/CronHandler/Port/CronHandlerService.mjs")).CronHandlerService.new(
             this.#shutdown_handler
         );
+
+        return this.#cron_handler_service;
     }
 }
