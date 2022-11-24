@@ -32,13 +32,6 @@ export class CronHandlerApi {
     }
 
     /**
-     * @returns {Promise<void>}
-     */
-    async init() {
-
-    }
-
-    /**
      * @param {Cron} cron
      * @returns {Promise<CronHandler>}
      */
