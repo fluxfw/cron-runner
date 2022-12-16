@@ -1,8 +1,8 @@
-/** @typedef {import("../../../Adapter/CronHandler/Cron.mjs").Cron} Cron */
-/** @typedef {import("../../../Adapter/CronHandler/CronHandler.mjs").CronHandler} CronHandler */
+/** @typedef {import("../../../Adapter/Cron/Cron.mjs").Cron} Cron */
 /** @typedef {import("../../../../../flux-shutdown-handler-api/src/Adapter/ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
+/** @typedef {import("../../../Adapter/Cron/task.mjs").task} _task */
 
-export class GetCronHandlerCommand {
+export class CronService {
     /**
      * @type {ShutdownHandler}
      */
@@ -10,7 +10,7 @@ export class GetCronHandlerCommand {
 
     /**
      * @param {ShutdownHandler} shutdown_handler
-     * @returns {GetCronHandlerCommand}
+     * @returns {CronService}
      */
     static new(shutdown_handler) {
         return new this(
@@ -27,13 +27,17 @@ export class GetCronHandlerCommand {
     }
 
     /**
+     * @param {_task} task
      * @param {Cron} cron
-     * @returns {Promise<CronHandler>}
+     * @returns {Promise<void>}
      */
-    async getCronHandler(cron) {
-        return (await import("../../../Adapter/CronHandler/CronHandler.mjs")).CronHandler.new(
-            this.#shutdown_handler,
-            cron
-        );
+    async runCron(task, cron) {
+        await (await import("../Command/RunCronCommand.mjs")).RunCronCommand.new(
+            this.#shutdown_handler
+        )
+            .runCron(
+                task,
+                cron
+            );
     }
 }

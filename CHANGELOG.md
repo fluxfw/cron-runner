@@ -6,6 +6,14 @@ Changes:
 
 \-
 
+## v2022-12-16-1
+
+Changes:
+
+- Rename to `flux-cron-api`
+- Remove schedule
+- Remove handler
+
 ## v2022-12-08-1
 
 Changes:
