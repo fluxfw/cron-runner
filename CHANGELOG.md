@@ -6,6 +6,13 @@ Changes:
 
 \-
 
+## v2023-03-16-1
+
+Changes:
+
+- Simplify
+- Renamed to `flux-cron-runner`
+
 ## v2023-02-09-1
 
 Changes:
