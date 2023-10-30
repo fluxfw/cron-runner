@@ -1,35 +1,35 @@
 import { existsSync } from "node:fs";
 import { unlink, writeFile } from "node:fs/promises";
 
-/** @typedef {import("../../flux-shutdown-handler/src/FluxShutdownHandler.mjs").FluxShutdownHandler} FluxShutdownHandler */
+/** @typedef {import("./ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("./task.mjs").task} _task */
 
 export class FluxCronRunner {
     /**
-     * @type {FluxShutdownHandler}
-     */
-    #flux_shutdown_handler;
-    /**
      * @type {boolean}
      */
     #lock_created;
+    /**
+     * @type {ShutdownHandler | null}
+     */
+    #shutdown_handler;
 
     /**
-     * @param {FluxShutdownHandler} flux_shutdown_handler
+     * @param {ShutdownHandler | null} shutdown_handler
      * @returns {FluxCronRunner}
      */
-    static new(flux_shutdown_handler) {
+    static new(shutdown_handler = null) {
         return new this(
-            flux_shutdown_handler
+            shutdown_handler
         );
     }
 
     /**
-     * @param {FluxShutdownHandler} flux_shutdown_handler
+     * @param {ShutdownHandler | null} shutdown_handler
      * @private
      */
-    constructor(flux_shutdown_handler) {
-        this.#flux_shutdown_handler = flux_shutdown_handler;
+    constructor(shutdown_handler) {
+        this.#shutdown_handler = shutdown_handler;
         this.#lock_created = false;
     }
 
@@ -39,11 +39,31 @@ export class FluxCronRunner {
      * @returns {Promise<void>}
      */
     async runCron(task, lock_file) {
-        await this.#flux_shutdown_handler.addTask(async () => {
+        /**
+         * @returns {Promise<void>}
+         */
+        const unlock = async () => {
             await this.#unlock(
                 lock_file
             );
-        });
+        };
+
+        if (this.#shutdown_handler !== null) {
+            await this.#shutdown_handler.addTask(
+                async () => {
+                    await unlock();
+                }
+            );
+        } else {
+            for (const name of [
+                "SIGINT",
+                "SIGTERM"
+            ]) {
+                process.on(name, async () => {
+                    await unlock();
+                });
+            }
+        }
 
         let exit_error = false;
 
@@ -60,9 +80,16 @@ export class FluxCronRunner {
             exit_error = true;
         }
 
-        await this.#flux_shutdown_handler.shutdown(
-            exit_error ? 1 : null
-        );
+        const exit_code = exit_error ? 1 : null;
+
+        if (this.#shutdown_handler !== null) {
+            await this.#shutdown_handler.shutdown(
+                exit_code
+            );
+        } else {
+            await unlock();
+            process.exit(exit_code);
+        }
     }
 
     /**
