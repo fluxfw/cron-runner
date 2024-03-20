@@ -16,9 +16,9 @@ export class FluxCronRunner {
 
     /**
      * @param {ShutdownHandler | null} shutdown_handler
-     * @returns {FluxCronRunner}
+     * @returns {Promise<FluxCronRunner>}
      */
-    static new(shutdown_handler = null) {
+    static async new(shutdown_handler = null) {
         return new this(
             shutdown_handler
         );
