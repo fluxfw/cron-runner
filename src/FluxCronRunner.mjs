@@ -1,5 +1,6 @@
+import { dirname } from "node:path";
 import { existsSync } from "node:fs";
-import { unlink, writeFile } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 
 /** @typedef {import("./ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("./task.mjs").task} _task */
@@ -112,6 +113,9 @@ export class FluxCronRunner {
         if (locked) {
             console.info(`Skip cron because it's already running - If this should be an error, try to delete ${lock_file}`);
         } else {
+            await mkdir(dirname(lock_file), {
+                recursive: true
+            });
             await writeFile(lock_file, Buffer.alloc(0));
             this.#lock_created = true;
         }
