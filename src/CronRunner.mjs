@@ -5,7 +5,7 @@ import { mkdir, unlink, writeFile } from "node:fs/promises";
 /** @typedef {import("./ShutdownHandler/ShutdownHandler.mjs").ShutdownHandler} ShutdownHandler */
 /** @typedef {import("./task.mjs").task} _task */
 
-export class FluxCronRunner {
+export class CronRunner {
     /**
      * @type {boolean}
      */
@@ -17,7 +17,7 @@ export class FluxCronRunner {
 
     /**
      * @param {ShutdownHandler | null} shutdown_handler
-     * @returns {Promise<FluxCronRunner>}
+     * @returns {Promise<CronRunner>}
      */
     static async new(shutdown_handler = null) {
         return new this(
